@@ -26,6 +26,16 @@ fun  registroCoins(backToListado:() -> Unit, viewModel: CoinsViewModel = hiltVie
     var valorValidar by remember { mutableStateOf(false)}
     val context = LocalContext.current
 
+
+    fun isNumeric(s: String): Boolean {
+        return try {
+            s.toDouble()
+            true
+        } catch (e: NumberFormatException) {
+            false
+        }
+    }
+
     Scaffold(
         topBar ={
             TopAppBar(title = { Text(text = "Registro") })
@@ -62,7 +72,6 @@ fun  registroCoins(backToListado:() -> Unit, viewModel: CoinsViewModel = hiltVie
             )
 
             Button(onClick = {
-
                 descripcionValidar = viewModel.descripcion.isBlank()
                 valorValidar = viewModel.valor.isBlank()
 
@@ -70,13 +79,17 @@ fun  registroCoins(backToListado:() -> Unit, viewModel: CoinsViewModel = hiltVie
                     Toast.makeText(context, "Debe insertar una descripción", Toast.LENGTH_SHORT).show()
                 }
 
-                if(viewModel.valor.toString() == ""){
+                if(!isNumeric(viewModel.valor.toString())){
+                    Toast.makeText(context, "El valor insertado no es valido.", Toast.LENGTH_SHORT).show()
+                }
+                if(viewModel.valor.toString() == "" && isNumeric(viewModel.valor.toString())){
                     Toast.makeText(context, "Debe insertar un valor", Toast.LENGTH_SHORT).show()
                 }
 
-                if(!descripcionValidar && !valorValidar){
+
+                if(!descripcionValidar && !valorValidar && isNumeric(viewModel.valor.toString())){
                     if(viewModel.valor.toFloat() > 0){
-                        viewModel.Guardar()
+                        //viewModel.Guardar()
                         Toast.makeText(context, "Se ha guardado con éxito.", Toast.LENGTH_SHORT).show()
                         backToListado()
                     }else{
